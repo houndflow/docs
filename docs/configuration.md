@@ -29,9 +29,9 @@ BASE_RPC_URL=...          # your own Base RPC endpoint
 
 Your keys stay in your own Aeon environment — Hound Flow has no server in this path.
 
-## Hosted MCP (coming soon) — client-side BYOK
+## Hosted MCP — client-side BYOK
 
-When the hosted MCP server launches, you'll pass BYOK credentials from your MCP client. **Hound Flow will never store them.** Two modes:
+With the hosted MCP server, you pass BYOK credentials from your MCP client. **Hound Flow never stores them.** Two modes:
 
 | Mode | How keys travel | Use when |
 |------|-----------------|----------|

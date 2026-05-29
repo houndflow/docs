@@ -126,4 +126,4 @@ Skills follow Aeon conventions — they log a status and notify only when a find
 
 ## Roadmap skills
 
-Planned: fund-flow tracing, linked-wallet clustering, approval audits, honeypot checks, LP-lock checks, MEV detection, and full composite investigation reports. See [Architecture → Roadmap](architecture.md#roadmap).
+Planned: linked-wallet clustering, approval audits, honeypot checks, LP-lock checks, MEV detection, and full composite investigation reports. See [Architecture → Roadmap](architecture.md#roadmap).

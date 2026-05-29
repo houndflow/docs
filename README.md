@@ -20,24 +20,27 @@ Hound Flow ships a set of **onchain investigation skills**. Where most crypto ag
 
 ## Available now: the Hound skill pack for Aeon
 
-Hound Flow's skills run today as a skill pack for the [Aeon](https://github.com/aaronjmars/aeon) autonomous-agent framework. They run on public Base endpoints out of the box, or with your own key (BYOK) for higher limits — no platform account required.
+## Available now: merged into Aeon
+
+Hound Flow's onchain-investigation skills are **merged into the [Aeon](https://github.com/aaronjmars/aeon) autonomous-agent framework** (PR #269). Install any of them into your own Aeon agent — they run on public Base endpoints out of the box, or with your own key (BYOK) for higher limits — no platform account required.
 
 ```bash
 # install a Hound skill into your Aeon agent
-./add-skill houndflow/hound-skills rug-scan
+./add-skill aaronjmars/aeon rug-scan
 
-# or the whole pack
-./add-skill houndflow/hound-skills --all
+# or several
+./add-skill aaronjmars/aeon rug-scan contract-audit wallet-profile
 ```
 
 ## The Hound Flow platform
 
 A hosted platform complements the skill pack for users who want investigation as a managed service:
 
-- **`houndflow.com/dashboard`** — a profile dashboard: connect a whitelisted wallet (SIWE) and generate, rotate, or revoke your API key. A built-in **terminal UI** for agent / AI sessions is planned. *(Live.)*
-- **`mcp.houndflow.com`** — a hosted MCP server exposing the same tools to any MCP client (Cursor, Claude Code, Codex), authenticated with one API key. *(In development.)*
+- **`chat.houndflow.com`** — **Hound Agent**, an OSINT chat: sign in with a whitelisted wallet and investigate onchain in natural language. The Hound tools are auto-connected, fund-flow graphs render inline, and you can bring your own Basescan key / RPC. *(Live.)*
+- **`mcp.houndflow.com`** — a hosted MCP server exposing the Hound tools to any MCP client (Cursor, Claude Code, Codex), authenticated with one API key. *(Live.)*
+- **`houndflow.com/dashboard`** — a profile dashboard: connect a whitelisted wallet (SIWE) and generate, rotate, or revoke your API key. *(Live.)*
 
-You can use Hound Flow today via the skill pack above; the hosted MCP server lands next.
+Use Hound Flow via the chat app, the hosted MCP server, or by installing the skill pack into your own Aeon agent.
 
 ## Skills
 
@@ -49,6 +52,7 @@ You can use Hound Flow today via the skill pack above; the hosted MCP server lan
 | `deployer-trace` | Every contract from a deployer; serial-rugger detection |
 | `tx-explain` | Plain-English transaction decode + suspicious-approval flags |
 | `holder-concentration` | Holder distribution, concentration (HHI), LP/lock exclusions, whale clusters |
+| `fund-flow` | Trace where funds move across hops; auto-generated flow graph |
 
 See the [full skill reference](docs/mcp-tools.md).
 
@@ -64,14 +68,14 @@ See the [full skill reference](docs/mcp-tools.md).
 
 | Doc | Contents |
 |-----|----------|
-| [Getting Started](docs/getting-started.md) | Install the skill pack (now) · connect to the hosted MCP (coming) |
+| [Getting Started](docs/getting-started.md) | Use the chat app · connect the hosted MCP · install skills into Aeon |
 | [Skills](docs/mcp-tools.md) | Skill-by-skill reference |
 | [Configuration](docs/configuration.md) | BYOK data sources (Basescan / Etherscan v2 / RPC) |
 | [Architecture](docs/architecture.md) | How skills and the planned platform fit together |
 
 ## Status
 
-Hound Flow is in active development. The skill pack and the account **dashboard** are live; the hosted MCP server is in progress. Follow [@houndflow](https://github.com/houndflow) for updates.
+The core platform is live: the **chat app** (chat.houndflow.com), the **hosted MCP server** (mcp.houndflow.com), and the account **dashboard** are all running, and the six investigation skills are **merged into Aeon** ([#269](https://github.com/aaronjmars/aeon/pull/269)). Multi-chain support and additional skills are on the roadmap. Follow [@houndflow](https://github.com/houndflow) for updates.
 
 ## License
 
