@@ -30,14 +30,14 @@ Hound Flow's skills run today as a skill pack for the [Aeon](https://github.com/
 ./add-skill houndflow/hound-skills --all
 ```
 
-## Coming soon: the Hound Flow platform
+## The Hound Flow platform
 
-A hosted platform is in development for users who want investigation as a managed service:
+A hosted platform complements the skill pack for users who want investigation as a managed service:
 
-- **`mcp.houndflow.com`** — a hosted MCP server exposing the same tools to any MCP client (Cursor, Claude Code, Codex), authenticated with one API key. *(Planned.)*
-- **`dashboard.houndflow.com`** — a profile-management dashboard: connect a whitelisted wallet, manage your API key. A built-in **terminal UI** for agent / AI sessions is planned. *(In development.)*
+- **`dashboard.houndflow.com`** — a profile dashboard: connect a whitelisted wallet (SIWE) and generate, rotate, or revoke your API key. A built-in **terminal UI** for agent / AI sessions is planned. *(Live.)*
+- **`mcp.houndflow.com`** — a hosted MCP server exposing the same tools to any MCP client (Cursor, Claude Code, Codex), authenticated with one API key. *(In development.)*
 
-Until then, the skill pack above is the way to use Hound Flow.
+You can use Hound Flow today via the skill pack above; the hosted MCP server lands next.
 
 ## Skills
 
@@ -71,7 +71,7 @@ See the [full skill reference](docs/mcp-tools.md).
 
 ## Status
 
-Hound Flow is in active development. The **skill pack is the current delivery**; the hosted MCP server and dashboard are in progress. Follow [@houndflow](https://github.com/houndflow) for updates.
+Hound Flow is in active development. The skill pack and the account **dashboard** are live; the hosted MCP server is in progress. Follow [@houndflow](https://github.com/houndflow) for updates.
 
 ## License
 

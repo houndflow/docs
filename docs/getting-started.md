@@ -1,9 +1,9 @@
 # Getting Started
 
-Hound Flow's investigation skills run today inside the [Aeon](https://github.com/aaronjmars/aeon) agent framework. A hosted MCP server is coming for users who'd rather connect a managed endpoint.
+Hound Flow's investigation skills run today inside the [Aeon](https://github.com/aaronjmars/aeon) agent framework. The **dashboard is live** for managing your account and API key; a hosted MCP server is in active development.
 
 - **Path A — Install the Hound skill pack (available now).** Run Hound's skills in your own Aeon agent.
-- **Path B — Connect to the hosted MCP server (coming soon).** One API key, any MCP client.
+- **Path B — Connect to the hosted MCP server (in development).** One API key, any MCP client.
 
 ---
 
@@ -56,13 +56,24 @@ Trigger a skill on demand or let it run on its schedule. For example, `rug-scan`
 
 ---
 
-## Path B — Hosted MCP server (coming soon)
+## Dashboard — create your account & API key (live)
 
-A hosted MCP server at **`mcp.houndflow.com`** will expose the same tools to any MCP client with a single API key — no Aeon required. This path is in development.
+The dashboard at **dashboard.houndflow.com** is live for managing your Hound Flow account:
+
+1. **Connect your wallet** and sign in (SIWE — an off-chain signature, no gas). Access is whitelisted during early access; if your wallet isn't approved yet, you'll be pointed to the waitlist.
+2. **Generate your API key.** Each account has exactly one. It's shown in plaintext **once** — copy it immediately; only a hash is stored. Use **Rotate** to replace it or **Revoke** to disable it.
+
+Your API key will authenticate you to the hosted MCP server below once it launches.
+
+---
+
+## Path B — Hosted MCP server (in development)
+
+A hosted MCP server at **`mcp.houndflow.com`** will expose the same tools to any MCP client with a single API key — no Aeon required. This is in active development.
 
 When it launches, the flow will be:
 
-1. Connect a whitelisted wallet at **dashboard.houndflow.com** and generate your API key.
+1. Get your API key from **dashboard.houndflow.com** (see above).
 2. Add the server to your MCP client:
 
    ```json
