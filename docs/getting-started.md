@@ -27,9 +27,9 @@ Each account has **exactly one** API key.
 3. Copy and store it securely (password manager or your agent's secret store). Hound Flow stores only a hash and cannot show it again.
 4. To replace a lost or leaked key, use **Rotate** (revokes the old key, issues a new one). **Revoke** disables access entirely.
 
-## 3. (Optional) Configure a data source
+## 3. (Optional) Bring your own data source
 
-Hound Flow works out of the box on a shared, rate-limited fallback. For higher limits and reliability, add your own Basescan / Etherscan v2 key or RPC endpoint under **Data Source**. See [Configuration](configuration.md) for details.
+Hound Flow works out of the box on a shared, rate-limited fallback. For higher limits and reliability, supply your own Basescan / Etherscan v2 key or RPC endpoint **in your MCP client config** (as headers in hosted mode, or environment variables in local mode). Hound Flow never stores these secrets. See [Configuration](configuration.md) for details.
 
 ## 4. Connect your agent
 
@@ -69,7 +69,22 @@ claude mcp add --transport http hound https://mcp.houndflow.com/mcp \
 ### Codex / other MCP clients
 Point the client at the HTTP MCP URL with the same `Authorization: Bearer` header. Any client speaking MCP over Streamable HTTP works.
 
-> The dashboard's **Connect** tab generates these snippets with your key already filled in.
+### Prefer to run it locally?
+You can run the MCP server on your own machine instead, so your data-source keys never leave it:
+```json
+{
+  "mcpServers": {
+    "hound": {
+      "command": "npx",
+      "args": ["-y", "@houndflow/mcp"],
+      "env": { "HOUND_API_KEY": "hf_live_YOUR_KEY" }
+    }
+  }
+}
+```
+See [Configuration](configuration.md) for hosted vs. local trade-offs and how to add your BYOK keys.
+
+> Your dashboard **profile** shows your API key and a ready-to-paste snippet with your key already filled in.
 
 ## 5. Run your first investigation
 
