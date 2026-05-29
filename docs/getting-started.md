@@ -1,121 +1,89 @@
 # Getting Started
 
-This guide takes you from zero to your first onchain investigation in a few minutes.
+Hound Flow's investigation skills run today inside the [Aeon](https://github.com/aaronjmars/aeon) agent framework. A hosted MCP server is coming for users who'd rather connect a managed endpoint.
 
-## Prerequisites
+- **Path A — Install the Hound skill pack (available now).** Run Hound's skills in your own Aeon agent.
+- **Path B — Connect to the hosted MCP server (coming soon).** One API key, any MCP client.
 
-- A **whitelisted wallet** (Hound Flow is wallet-gated during MVP).
-- An **MCP-compatible AI client** — Cursor, Claude Code, Codex, or any client that speaks MCP over Streamable HTTP.
+---
 
-## 1. Sign in
+## Path A — Install the Hound skill pack (now)
 
-1. Visit **https://dashboard.houndflow.com**.
-2. Click **Connect Wallet** and sign the login message (SIWE — Sign-In With Ethereum). This proves wallet ownership; it costs no gas and sends no transaction.
-3. If your wallet is whitelisted, you enter the dashboard. Otherwise you'll see a **Request Access** screen that adds you to the waitlist.
+### Prerequisites
 
-> One wallet = one account. There is no password — login is the wallet signature.
+- An [Aeon](https://github.com/aaronjmars/aeon) agent (fork the repo, or your own clone).
+- Optional: a Basescan / Etherscan v2 API key or a Base RPC URL for higher rate limits. Skills run on public endpoints without one. See [Configuration](configuration.md).
 
-## 2. Generate your API key
+### Install
 
-Each account has **exactly one** API key.
+From your Aeon repo root:
 
-1. Open **API Key** in the dashboard.
-2. Click **Generate Key**. The key is shown **once**:
-   ```
-   hf_live_3f9a2c7b8e1d4a6f0c5b9e2d7a1f4c8b
-   ```
-3. Copy and store it securely (password manager or your agent's secret store). Hound Flow stores only a hash and cannot show it again.
-4. To replace a lost or leaked key, use **Rotate** (revokes the old key, issues a new one). **Revoke** disables access entirely.
-
-## 3. (Optional) Bring your own data source
-
-Hound Flow works out of the box on a shared, rate-limited fallback. For higher limits and reliability, supply your own Basescan / Etherscan v2 key or RPC endpoint **in your MCP client config** (as headers in hosted mode, or environment variables in local mode). Hound Flow never stores these secrets. See [Configuration](configuration.md) for details.
-
-## 4. Connect your agent
-
-Hound Flow's MCP server lives at **`https://mcp.houndflow.com/mcp`** (Streamable HTTP). Authenticate with your API key as a Bearer token. Replace `hf_live_YOUR_KEY` below.
-
-### Cursor — `~/.cursor/mcp.json`
-```json
-{
-  "mcpServers": {
-    "hound": {
-      "url": "https://mcp.houndflow.com/mcp",
-      "headers": { "Authorization": "Bearer hf_live_YOUR_KEY" }
-    }
-  }
-}
-```
-
-### Claude Code — `.mcp.json` (project root)
-```json
-{
-  "mcpServers": {
-    "hound": {
-      "type": "http",
-      "url": "https://mcp.houndflow.com/mcp",
-      "headers": { "Authorization": "Bearer hf_live_YOUR_KEY" }
-    }
-  }
-}
-```
-
-Or via CLI:
 ```bash
-claude mcp add --transport http hound https://mcp.houndflow.com/mcp \
-  --header "Authorization: Bearer hf_live_YOUR_KEY"
+# install one skill
+./add-skill houndflow/hound-skills rug-scan
+
+# install several
+./add-skill houndflow/hound-skills rug-scan contract-audit wallet-profile
+
+# install the whole pack
+./add-skill houndflow/hound-skills --all
 ```
 
-### Codex / other MCP clients
-Point the client at the HTTP MCP URL with the same `Authorization: Bearer` header. Any client speaking MCP over Streamable HTTP works.
+Installed skills land in `skills/` and are added to `aeon.yml` **disabled**. Enable the ones you want:
 
-### Prefer to run it locally?
-You can run the MCP server on your own machine instead, so your data-source keys never leave it:
-```json
-{
-  "mcpServers": {
-    "hound": {
-      "command": "npx",
-      "args": ["-y", "@houndflow/mcp"],
-      "env": { "HOUND_API_KEY": "hf_live_YOUR_KEY" }
-    }
-  }
-}
-```
-See [Configuration](configuration.md) for hosted vs. local trade-offs and how to add your BYOK keys.
-
-> Your dashboard **profile** shows your API key and a ready-to-paste snippet with your key already filled in.
-
-## 5. Run your first investigation
-
-In your agent, try:
-
-```
-Use hound to scan rug risk for 0x4200000000000000000000000000000000000006 on Base
+```yaml
+# aeon.yml
+skills:
+  rug-scan:
+    enabled: true
 ```
 
-You should receive a structured rug-risk verdict. Explore the other tools:
+### (Optional) Add your data source
 
-- *"Audit contract 0x… on Base"* → `hound_analyze_contract`
-- *"Profile wallet 0x…"* → `hound_analyze_wallet`
-- *"What else did 0x… deploy?"* → `hound_check_deployer_history`
-- *"Explain transaction 0x…"* → `hound_decode_transaction`
-- *"Show holder concentration for 0x…"* → `hound_analyze_token_holders`
+Skills use public Base endpoints by default. To raise limits, set any of these in your Aeon environment:
 
-See the [MCP Tools reference](mcp-tools.md) for inputs and outputs.
+```bash
+BASESCAN_API_KEY=...      # https://basescan.org/myapikey
+ETHERSCAN_API_KEY=...     # https://etherscan.io/myapikey (works for Base via chainid=8453)
+BASE_RPC_URL=...          # your own Base RPC endpoint
+```
 
-## Troubleshooting
+See [Configuration](configuration.md) for the resolution order and details.
 
-| Symptom | Cause | Fix |
-|---------|-------|-----|
-| `401 unauthorized` | Missing / invalid / revoked key | Check the Bearer header; rotate the key in the dashboard |
-| `403 not_whitelisted` | Wallet not approved | Request access and wait for approval |
-| `409 key_exists` on generate | Account already has a key | Use **Rotate** instead |
-| `DATA_SOURCE_ERROR` from a tool | All configured sources failed | Set or repair a data source; run **Test Connection** |
-| Rate-limited | Shared keyless limits | Add your own BYOK key / RPC |
+### Run
+
+Trigger a skill on demand or let it run on its schedule. For example, `rug-scan` takes a token address as its variable input and returns a structured rug-risk verdict. See the [Skills reference](mcp-tools.md) for each skill's input and output.
+
+---
+
+## Path B — Hosted MCP server (coming soon)
+
+A hosted MCP server at **`mcp.houndflow.com`** will expose the same tools to any MCP client with a single API key — no Aeon required. This path is in development.
+
+When it launches, the flow will be:
+
+1. Connect a whitelisted wallet at **dashboard.houndflow.com** and generate your API key.
+2. Add the server to your MCP client:
+
+   ```json
+   {
+     "mcpServers": {
+       "hound": {
+         "url": "https://mcp.houndflow.com/mcp",
+         "headers": { "Authorization": "Bearer hf_live_YOUR_KEY" }
+       }
+     }
+   }
+   ```
+
+3. Ask your agent: *"Use hound to scan rug risk for `0x…` on Base."*
+
+Until then, use **Path A**.
+
+---
 
 ## Next steps
 
+- [Skills reference](mcp-tools.md) — what each skill investigates
 - [Configuration](configuration.md) — bring your own data source
-- [MCP Tools](mcp-tools.md) — full tool reference
-- [Architecture](architecture.md) — how it all fits together
+- [Architecture](architecture.md) — how the skills and planned platform fit together

@@ -4,9 +4,9 @@
 
 **Give AI agents eyes onchain.**
 
-Onchain intelligence infrastructure that lets AI agents investigate wallets, contracts, transactions, and suspicious activity on **Base** — autonomously, through a single MCP connection.
+Onchain investigation skills for AI agents on **Base** — rug-risk scoring, contract audits, wallet profiling, deployer tracing, transaction decoding, and holder analysis.
 
-[Getting Started](docs/getting-started.md) · [Architecture](docs/architecture.md) · [MCP Tools](docs/mcp-tools.md) · [Configuration](docs/configuration.md)
+[Getting Started](docs/getting-started.md) · [Skills](docs/mcp-tools.md) · [Configuration](docs/configuration.md) · [Architecture](docs/architecture.md)
 
 </div>
 
@@ -16,67 +16,62 @@ Onchain intelligence infrastructure that lets AI agents investigate wallets, con
 
 Blockchain data is public, but understanding it still takes manual block-explorer digging and years of analyst experience. Hound Flow closes that gap for AI agents.
 
-Connect your agent (Cursor, Claude Code, Codex, or any MCP-compatible client) to our hosted MCP server with one API key, and it gains a seasoned onchain investigator's toolkit: rug-risk scoring, contract audits, wallet profiling, deployer tracing, transaction decoding, and holder analysis.
+Hound Flow ships a set of **onchain investigation skills**. Where most crypto agent tooling answers *"what moved?"*, Hound Flow answers *"is this safe, and who is behind it?"* — a seasoned investigator's toolkit, packaged for autonomous agents.
 
-**Hound Flow is infrastructure, not a dashboard.** Where Etherscan, Arkham, and Nansen built UIs for humans, Hound Flow builds an MCP/API layer for autonomous agents.
+## Available now: the Hound skill pack for Aeon
+
+Hound Flow's skills run today as a skill pack for the [Aeon](https://github.com/aaronjmars/aeon) autonomous-agent framework. They run on public Base endpoints out of the box, or with your own key (BYOK) for higher limits — no platform account required.
+
+```bash
+# install a Hound skill into your Aeon agent
+./add-skill houndflow/hound-skills rug-scan
+
+# or the whole pack
+./add-skill houndflow/hound-skills --all
+```
+
+## Coming soon: the Hound Flow platform
+
+A hosted platform is in development for users who want investigation as a managed service:
+
+- **`mcp.houndflow.com`** — a hosted MCP server exposing the same tools to any MCP client (Cursor, Claude Code, Codex), authenticated with one API key. *(Planned.)*
+- **`dashboard.houndflow.com`** — a profile-management dashboard: connect a whitelisted wallet, manage your API key. A built-in **terminal UI** for agent / AI sessions is planned. *(In development.)*
+
+Until then, the skill pack above is the way to use Hound Flow.
+
+## Skills
+
+| Skill | Investigates |
+|-------|--------------|
+| `rug-scan` | Rug-pull risk: ownership, mint/freeze powers, LP lock, holder concentration |
+| `contract-audit` | Verification, proxy/upgradeability, admin roles, mint/freeze/pause, backdoors |
+| `wallet-profile` | Behavioral profile, funding source, counterparties, risk flags |
+| `deployer-trace` | Every contract from a deployer; serial-rugger detection |
+| `tx-explain` | Plain-English transaction decode + suspicious-approval flags |
+| `holder-concentration` | Holder distribution, concentration (HHI), LP/lock exclusions, whale clusters |
+
+See the [full skill reference](docs/mcp-tools.md).
 
 ## Why Hound Flow
 
-- **Agent-native** — Investigation tools exposed over the Model Context Protocol, not a web UI.
-- **One-key connect** — Whitelisted wallet logs in, generates a single API key, connects any MCP client.
-- **Bring your own key (BYOK)** — Use your own Basescan / Etherscan v2 key or RPC endpoint, or run on our shared fallback.
-- **Base-first** — Purpose-built for the Base ecosystem (chain id `8453`). Multi-chain on the roadmap.
-- **Security-focused** — Read-only by design. No onchain writes, ever.
-
-## Capabilities
-
-| Tool | Investigates |
-|------|--------------|
-| `hound_detect_rug_risk` | Rug-pull risk: ownership, mint/freeze powers, LP lock, holder concentration |
-| `hound_analyze_contract` | Verification, proxy/upgradeability, admin roles, mint/freeze/pause, backdoors |
-| `hound_analyze_wallet` | Behavioral profile, funding source, counterparties, risk flags |
-| `hound_check_deployer_history` | Every contract from a deployer; serial-rugger detection |
-| `hound_decode_transaction` | Plain-English transaction decode + suspicious-approval flags |
-| `hound_analyze_token_holders` | Holder distribution, concentration (HHI), LP/lock exclusions, whale clusters |
-
-See the [full tool reference](docs/mcp-tools.md).
-
-## Quick start
-
-1. Connect your whitelisted wallet at **dashboard.houndflow.com** and generate your API key.
-2. Add the MCP server to your agent:
-
-   ```json
-   {
-     "mcpServers": {
-       "hound": {
-         "url": "https://mcp.houndflow.com/mcp",
-         "headers": { "Authorization": "Bearer hf_live_YOUR_KEY" }
-       }
-     }
-   }
-   ```
-
-3. Ask your agent: *"Use hound to scan rug risk for `0x…` on Base."*
-
-Full walkthrough in [Getting Started](docs/getting-started.md).
+- **Investigation-first** — Security and forensics, not just price/volume monitoring.
+- **Base-native** — Purpose-built for the Base ecosystem (chain id `8453`). Multi-chain on the roadmap.
+- **Bring your own key (BYOK)** — Use your own Basescan / Etherscan v2 key or RPC endpoint, or run on public endpoints.
+- **Read-only by design** — Tools never sign or send transactions. No onchain writes, ever.
+- **Standalone** — Skills work in any Aeon agent today; the hosted platform is optional and additive.
 
 ## Documentation
 
 | Doc | Contents |
 |-----|----------|
-| [Getting Started](docs/getting-started.md) | Access, API key, connecting your agent |
-| [Architecture](docs/architecture.md) | System design and components |
+| [Getting Started](docs/getting-started.md) | Install the skill pack (now) · connect to the hosted MCP (coming) |
+| [Skills](docs/mcp-tools.md) | Skill-by-skill reference |
 | [Configuration](docs/configuration.md) | BYOK data sources (Basescan / Etherscan v2 / RPC) |
-| [MCP Tools](docs/mcp-tools.md) | Tool-by-tool reference |
-
-## Ecosystem
-
-Hound Flow is designed to interoperate with the [Aeon](https://github.com/aaronjmars/aeon) autonomous-agent framework. Our investigation skills fill the security/forensics gap in Aeon's crypto skill set — monitoring tools answer *"what moved?"*; Hound Flow answers *"is this safe, and who is behind it?"*
+| [Architecture](docs/architecture.md) | How skills and the planned platform fit together |
 
 ## Status
 
-Hound Flow is in active development (MVP). Access is wallet-gated during the early phase. Follow [@houndflow](https://github.com/houndflow) for updates.
+Hound Flow is in active development. The **skill pack is the current delivery**; the hosted MCP server and dashboard are in progress. Follow [@houndflow](https://github.com/houndflow) for updates.
 
 ## License
 

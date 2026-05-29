@@ -1,104 +1,78 @@
 # Architecture
 
-Hound Flow is an onchain-investigation platform for **Base**. AI agents connect to the Hound MCP server — hosted or run locally — and invoke read-only investigation tools with a single Hound API key. Users bring their own data-source credentials (BYOK); Hound Flow never stores them.
+Hound Flow is delivered in two layers: a **skill pack** that runs today inside the [Aeon](https://github.com/aaronjmars/aeon) framework, and a **hosted platform** (MCP server + dashboard) in development. The skill pack is the current delivery; the platform is additive.
 
-## System overview
+## Current delivery: the Hound skill pack
 
-```
-┌─────────────────────────────────────────────────────────┐
-│  AI Agent  (Cursor · Claude Code · Codex · any MCP)      │
-└──────────────┬──────────────────────────┬───────────────┘
-   HOSTED mode │                           │ LOCAL mode
-   MCP (HTTP)  │                           │ MCP (stdio, npx)
-   Bearer key  │                           │ keys from env
-   + BYOK hdrs ▼                           ▼ (never leave machine)
-┌──────────────────────────┐   ┌──────────────────────────┐
-│  mcp.houndflow.com        │   │  @houndflow/mcp (local)   │
-│  • Validates Hound key    │   │  • Runs on user machine   │
-│  • Exposes hound_* tools  │   │  • Same hound_* tools     │
-│  • BYOK in-memory only,   │   │  • Calls Base sources     │
-│    never stored           │   │    directly               │
-└──────┬─────────────┬──────┘   └─────────────┬────────────┘
-       │ validate    │ analyze (+BYOK,        │ analyze (+BYOK,
-       │ key         │ per-call)              │ in-process)
-       ▼             ▼                        ▼
-┌──────────────┐  ┌──────────────────────────────────────┐
-│ api.houndflow│  │  Base data sources (user's BYOK or     │
-│ .com         │  │  keyless fallback)                     │
-│ accounts,    │  │  Basescan · Etherscan v2 · custom RPC  │
-│ keys, w-list │  └──────────────────────────────────────┘
-└──────────────┘
-
-dashboard.houndflow.com — wallet login + profile (API key). No data-source storage.
-```
-
-## Components
-
-### 1. MCP Server (`hound-mcp`)
-
-The product surface, shipped as one codebase with two transports:
-
-- **Hosted** (`mcp.houndflow.com`) — MCP over **Streamable HTTP**. Authenticates every request via `Authorization: Bearer <api_key>` and rejects anonymous calls. BYOK credentials arrive as request headers, are held **in memory for the single call only**, and are never written anywhere.
-- **Local** (`npx @houndflow/mcp`) — MCP over **stdio**, running on the user's machine. BYOK credentials come from the user's environment and **never leave their machine** (zero-transit).
-
-Both register the same `hound_*` tools, validate inputs (EVM address / tx-hash shape), and return structured results with a `source=` footer.
-
-### 2. Backend API (`api.houndflow.com`)
-
-The account layer (not a data-source store).
-
-- **Auth & accounts** — SIWE (Sign-In With Ethereum) login, whitelist gate, one API key per account (stored as a hash).
-- **Key validation** — `internal/keys/validate` lets the hosted MCP server check a key (Redis-cached).
-- **Analyzers** — Investigation logic for the six tools. In hosted mode the MCP server may proxy to these endpoints, passing the per-request BYOK config (which is used and discarded, never stored). In local mode the same logic runs in-process.
-- **Rate-limit & metering** — Per-account limits and usage counts.
-
-**What the backend stores:** accounts (wallet), API-key hashes, whitelist. **It does not store data-source secrets** — there is no data-source table.
-
-### 3. Dashboard (`dashboard.houndflow.com`)
-
-Minimal by design. Connect wallet (SIWE), pass the whitelist gate, and manage your **profile**: view your wallet, generate / rotate / revoke your single API key, and copy a ready-to-paste MCP client snippet. **There is no data-source configuration page** — BYOK is set in your own client config.
-
-## Authentication model
+Each skill is a self-contained `SKILL.md` — markdown instructions an agent executes. Skills read onchain data from Base via public endpoints or your own BYOK keys, and return a structured verdict. They carry no infrastructure of their own: they run wherever the Aeon agent runs.
 
 ```
-Wallet → SIWE signature → session (dashboard only)
-                            │
+┌─────────────────────────────────────────────┐
+│  Aeon agent (your fork / clone)              │
+│  ┌─────────────────────────────────────────┐ │
+│  │  Hound skills (SKILL.md)                 │ │
+│  │  rug-scan · contract-audit · …           │ │
+│  └───────────────────┬─────────────────────┘ │
+└──────────────────────┼───────────────────────┘
+                       │  BYOK or public endpoints
+                       ▼
+        Base data sources: Basescan · Etherscan v2 · RPC
+```
+
+- **Install:** `./add-skill houndflow/hound-skills <skill>` (see [Getting Started](getting-started.md)).
+- **Data sources:** resolved per call from the agent's environment — Basescan key → Etherscan v2 key → custom RPC → public fallback (see [Configuration](configuration.md)).
+- **Read-only:** skills never sign or send transactions.
+
+## Planned platform
+
+For users who want investigation as a managed service rather than running an Aeon agent.
+
+```
+┌──────────────────────────────────────────────────────┐
+│  AI Agent (Cursor · Claude Code · Codex · any MCP)    │
+└───────────────────────────┬──────────────────────────┘
+                            │  MCP (Streamable HTTP) + Bearer key   [PLANNED]
                             ▼
-                   Whitelist check ── not listed ──▶ request access
-                            │ listed
+┌──────────────────────────────────────────────────────┐
+│  mcp.houndflow.com — hosted MCP server     [PLANNED]  │
+│  • Validates API key                                  │
+│  • Exposes the same investigation tools               │
+│  • BYOK passed per call, never stored                 │
+└───────────────────────────┬──────────────────────────┘
                             ▼
-                   Generate API key (one per account)
-                            │
-                            ▼
-        Agent uses API key → MCP server → tools
+        Base data sources: Basescan · Etherscan v2 · RPC
+
+dashboard.houndflow.com — profile management   [IN DEVELOPMENT]
+  • Wallet (SIWE) login, whitelist gate
+  • Manage one API key per account
+  • Terminal UI for agent / AI sessions   [PLANNED]
 ```
 
-- **SIWE** proves wallet ownership with an off-chain signature (no gas).
-- **Whitelist** gates platform access during MVP.
-- **API key** authenticates agent/tool traffic. Exactly one active key per account; rotating revokes the previous key.
+### Hosted MCP server (planned)
 
-## Data flow: a tool call (hosted mode)
+A remote MCP server over Streamable HTTP, authenticated per request with a Hound API key. It exposes the same investigation tools as the skill pack. BYOK credentials, when supplied, are used in-memory for a single call and never stored. There is no anonymous access.
 
-1. Agent calls `hound_detect_rug_risk(token)` over MCP with its Bearer key and any BYOK headers.
-2. MCP server validates the key (Redis-cached) and resolves the account.
-3. The data layer fetches onchain data using the **per-request BYOK credentials** (Basescan → Etherscan v2 → custom RPC → keyless fallback). The credentials live in memory for this call only.
-4. The rug analyzer scores the token and returns a structured verdict (with `source=`).
-5. The MCP server returns the verdict; usage is metered. BYOK credentials are discarded — never persisted or logged.
+### Dashboard (in development)
 
-In **local mode**, steps 3–4 run entirely on the user's machine and the BYOK credentials never touch Hound Flow infrastructure.
+A profile-management surface — not a data dashboard:
+
+- Connect a wallet (SIWE — Sign-In With Ethereum); access is whitelisted during early access.
+- Generate, rotate, and revoke a single API key per account.
+- A built-in **terminal UI** for agent / AI sessions is planned.
+
+The backend stores only accounts (wallet), API-key hashes, and the whitelist. It does not store data-source secrets — BYOK is supplied by the client per call.
 
 ## Design principles
 
-- **Client-side BYOK.** Users own their data-source secrets. Hound Flow never stores them — hosted mode holds them in memory for one call; local mode keeps them on the user's machine.
+- **Standalone skills.** The skill pack works in any Aeon agent today; the platform is optional and additive.
+- **Client-side BYOK.** Users own their data-source secrets; the platform never stores them.
 - **Read-only.** Tools never sign or send transactions. No `onchain_writes`.
-- **Authenticated by default.** The hosted MCP endpoint has no anonymous access.
-- **Minimal custody.** The backend stores only accounts, API-key hashes, and the whitelist.
-- **Spec-driven tools.** Each tool's behavior is documented and versioned, so hosted and local implementations stay in sync.
+- **Spec-driven.** Each skill's `SKILL.md` is the behavior spec, so the skill pack and the planned hosted tools stay in sync.
 
 ## Roadmap
 
 | Phase | Focus |
 |-------|-------|
-| MVP | Base-only, 6 core tools, wallet whitelist, client-side BYOK, hosted + local MCP |
-| Next | Fund-flow tracing, linked-wallet clustering, approval & honeypot checks, full investigation reports |
-| Later | Multi-chain (Ethereum, Arbitrum, Optimism), SDKs, deeper ecosystem integrations |
+| Now | Hound skill pack for Aeon — 6 core skills on Base, BYOK or public endpoints |
+| Next | Hosted MCP server (`mcp.houndflow.com`); profile dashboard; more skills (fund-flow, linked-wallets, approvals, honeypot, full reports) |
+| Later | Dashboard terminal UI for agent sessions; multi-chain (Ethereum, Arbitrum, Optimism); SDKs |
