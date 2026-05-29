@@ -18,6 +18,7 @@ Install them into an Aeon agent (see [Getting Started](getting-started.md)). Whe
 | `deployer-trace` | `hound_check_deployer_history` |
 | `tx-explain` | `hound_decode_transaction` |
 | `holder-concentration` | `hound_analyze_token_holders` |
+| `fund-flow` | `hound_track_fund_flow` |
 
 ---
 
@@ -94,6 +95,21 @@ Analyze a token's holder distribution.
 | **Returns** | Top-N share, concentration index (HHI), holders-to-50%, and a verdict (`HEALTHY` / `CONCENTRATED` / `FRAGILE`) |
 
 Classifies and excludes non-circulating holders (LP, lockers, burn, contracts) and flags whale clusters that share a funding source.
+
+---
+
+## `fund-flow`
+
+Trace where funds move across multiple hops from an address, and auto-generate a flow graph.
+
+| | |
+|--|--|
+| **Input** | `address` (EVM address), `direction` (`out` = where funds go, default; `in` = where funds came from), `depth` (1–3 hops, default 2) |
+| **Returns** | Traced addresses + transfers, the list of endpoint addresses (where money ends up / originates), and a **Mermaid `graph LR` diagram** that renders automatically in MCP clients that support it |
+
+Does a breadth-first trace following the top counterparties by value at each hop. The target node is highlighted; edges are labelled with amount + asset.
+
+> **Requires explorer access.** Multi-hop transfer history comes from a Basescan/Etherscan API key. Provide one via the `X-Basescan-Key` header (hosted) or `BASESCAN_API_KEY` (local). Without a key the tool returns just the target node and a note explaining how to enable full tracing.
 
 ---
 
