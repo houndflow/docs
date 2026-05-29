@@ -58,7 +58,7 @@ Trigger a skill on demand or let it run on its schedule. For example, `rug-scan`
 
 ## Dashboard — create your account & API key (live)
 
-The dashboard at **dashboard.houndflow.com** is live for managing your Hound Flow account:
+The dashboard at **houndflow.com/dashboard** is live for managing your Hound Flow account:
 
 1. **Connect your wallet** and sign in (SIWE — an off-chain signature, no gas). Access is whitelisted during early access; if your wallet isn't approved yet, you'll be pointed to the waitlist.
 2. **Generate your API key.** Each account has exactly one. It's shown in plaintext **once** — copy it immediately; only a hash is stored. Use **Rotate** to replace it or **Revoke** to disable it.
@@ -73,7 +73,7 @@ A hosted MCP server at **`mcp.houndflow.com`** will expose the same tools to any
 
 When it launches, the flow will be:
 
-1. Get your API key from **dashboard.houndflow.com** (see above).
+1. Get your API key from **houndflow.com/dashboard** (see above).
 2. Add the server to your MCP client:
 
    ```json

@@ -42,7 +42,7 @@ For users who want investigation as a managed service rather than running an Aeo
                             ▼
         Base data sources: Basescan · Etherscan v2 · RPC
 
-dashboard.houndflow.com — profile management   [LIVE]
+houndflow.com/dashboard — profile management   [LIVE]
   • Wallet (SIWE) login, whitelist gate
   • Generate / rotate / revoke one API key per account
   • Terminal UI for agent / AI sessions   [PLANNED]

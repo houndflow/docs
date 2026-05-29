@@ -34,7 +34,7 @@ Hound Flow's skills run today as a skill pack for the [Aeon](https://github.com/
 
 A hosted platform complements the skill pack for users who want investigation as a managed service:
 
-- **`dashboard.houndflow.com`** — a profile dashboard: connect a whitelisted wallet (SIWE) and generate, rotate, or revoke your API key. A built-in **terminal UI** for agent / AI sessions is planned. *(Live.)*
+- **`houndflow.com/dashboard`** — a profile dashboard: connect a whitelisted wallet (SIWE) and generate, rotate, or revoke your API key. A built-in **terminal UI** for agent / AI sessions is planned. *(Live.)*
 - **`mcp.houndflow.com`** — a hosted MCP server exposing the same tools to any MCP client (Cursor, Claude Code, Codex), authenticated with one API key. *(In development.)*
 
 You can use Hound Flow today via the skill pack above; the hosted MCP server lands next.
